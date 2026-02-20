@@ -40,6 +40,10 @@
   background: #a6a6a6; /* цвет кнопки сервый */
 }
 
+.my-btn.tertiary {
+  background: #353535; /* цвет кнопки сервый */
+}
+
 /* селектор для кнопки расчета выражения (=) */
 .my-btn.execute {
   width: 110px;          /* сделаем кнопку шире других */
@@ -84,7 +88,7 @@ body {
 }
 
 .calculator {
-  background: #1e1e1e;
+  background: #000000;
   padding: 20px;
   border-radius: 15px;
   display: inline-block; /* чтобы фон обтекал содержимое */
