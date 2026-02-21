@@ -188,4 +188,25 @@ window.onload = function() {
             compute();
         }
     };
+
+    // Логика переключения темы
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    // Загружаем сохранённую тему
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-theme');
+        themeToggle.textContent = '☀'; // солнце переключит на светлую
+    } else {
+        themeToggle.textContent = '☾'; // луна переключит на тёмную
+    }
+
+    // Обработчик клика
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        themeToggle.textContent = isDark ? '☀' : '☾';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
 };
