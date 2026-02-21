@@ -3,19 +3,22 @@
 
 <head>
   <title>Калькулятор</title>
-    <title>калькулятор</title>
-    <link rel="stylesheet" href="calculator.css">
+  <link rel="stylesheet" href="calculator.css">
+  <script type="text/javascript" src="script.js"></script>
+
 </head>
 
 <body>
+  <header class="bmstu-header">
+    <details class="author-details">
+      <summary>Автор</summary>
+      <p>ФИО: Крахмальникова А. И.</p>
+      <p>Группа: ИУ5-46Б</p>
+      <a href="https://github.com/Asgdhd/JavaScript_2026" target="_blank">GitHub</a>
+    </details>
+    <button id="theme-toggle" class="theme-btn">☾</button>
+  </header>
 
-  <details class="author-details">
-    <summary>Автор</summary>
-    <p>ФИО: Крахмальникова А. И.</p>
-    <p>Группа: ИУ5-46Б</p>
-    <a href="https://github.com/Asgdhd/JavaScript_2026/tree/lab1_calculator_HTML_CSS" target="_blank">GitHub</a>
-
-  </details>
 
   <div class="calculator"> <!-- div - это базовый html-контейнер, который может содержать в себе другие html-элементы. -->
 
@@ -28,9 +31,15 @@
     <div>
       <!--горизонтальный ряд из четырех кнопок-->
       <div>
+        <button id="btn_op_percent" class="my-btn tertiary">%</button>
+        <button id="btn_op_factorial" class="my-btn tertiary">x!</button>
+        <button id="btn_pi" class="my-btn tertiary">π</button>
+      </div>
+
+      <div>
+        <button id="btn_op_erase" class="my-btn secondary">CE</button>
         <button id="btn_op_clear" class="my-btn secondary">C</button>    <!-- про тэг кнопки: https://www.w3schools.com/tags/tag_button.asp -->
         <button id="btn_op_sign" class="my-btn secondary">+/-</button>
-        <button id="btn_op_percent" class="my-btn secondary">%</button>
         <button id="btn_op_div" class="my-btn primary">/</button>
       </div>
 
