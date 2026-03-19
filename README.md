@@ -486,190 +486,198 @@ p.my-large-italic {
 20. Скопируйте для калькулятора стилистику веб-ресурса, которая не будет повторяться с остальными студентами
 
 ## 9. Выполненные дополнительные задания
-1. Шапка страницы:
 
-    ```html
-  <header class="bmstu-header">
-    <!-- Кнопка-гамбургер -->
-    <button class="menu-toggle" id="menuToggle" aria-label="Меню"><i class="pi pi-bars" style="font-size: 1.5rem;"></i></button>
-    <!-- Переключатель темы -->
-    <button id="theme-toggle" class="theme-btn">☾</button>
-  </header>
-    ```
+1. Шапка страницы
 
-    ```css
-    .bmstu-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 70px;
-    background-color: rgb(0, 108, 220);
-    display: flex;
-    align-items: center;
-    z-index: 100;
+```html
+<header class="bmstu-header">
+  <!-- Кнопка-гамбургер -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Меню">
+    <i class="pi pi-bars" style="font-size: 1.5rem;"></i>
+  </button>
+  <!-- Переключатель темы -->
+  <button id="theme-toggle" class="theme-btn">☾</button>
+</header>
+```
+
+```css
+.bmstu-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: rgb(0, 108, 220);
+  display: flex;
+  align-items: center;
+  z-index: 100;
 }
-    ```
-2. Кнопка переключения темы:
+```
 
+2. Кнопка переключения темы
 
-    ```html
-    <button id="theme-toggle" class="theme-btn">☾</button>
-    ```
+```html
+<button id="theme-toggle" class="theme-btn">☾</button>
+```
 
-    ```css
-    .theme-btn {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.8rem;
-    cursor: pointer;
-    padding: 0 10px;
-    line-height: 1;
-    transition: transform 0.2s;
-    margin-left: auto;
+```css
+.theme-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0 10px;
+  line-height: 1;
+  transition: transform 0.2s;
+  margin-left: auto;
 }
 
 .theme-btn:hover {
-    transform: scale(1.3);
+  transform: scale(1.3);
 }
-    ```
-3. Боковое меню:
-    ```html
-   <aside class="sidebar" id="sidebar">
-    <nav>
-      <ul class="nav-menu">
-        <li><a href="#" id="nav-home" class="nav-link active"><i class="pi pi-home"></i> Главная</a></li>
-        <li><a href="#" id="nav-author" class="nav-link"><i class="pi pi-user"></i> Автор</a></li>
-        <li><a href="#" id="nav-calc" class="nav-link"><i class="pi pi-calculator"></i> Калькулятор</a></li>
-      </ul>
-    </nav>
-  </aside>
-    ```
+```
 
-    ```css
-    .sidebar {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    width: 250px;
-    height: calc(100vh - 70px);
-    background-color: #ffffff;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 90;
+3. Боковое меню
+
+```html
+<aside class="sidebar" id="sidebar">
+  <nav>
+    <ul class="nav-menu">
+      <li><a href="#" id="nav-home" class="nav-link active"><i class="pi pi-home"></i> Главная</a></li>
+      <li><a href="#" id="nav-author" class="nav-link"><i class="pi pi-user"></i> Автор</a></li>
+      <li><a href="#" id="nav-calc" class="nav-link"><i class="pi pi-calculator"></i> Калькулятор</a></li>
+    </ul>
+  </nav>
+</aside>
+```
+
+```css
+.sidebar {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  width: 250px;
+  height: calc(100vh - 70px);
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 90;
 }
 
 .sidebar.open {
-    transform: translateX(0);
+  transform: translateX(0);
 }
 
 /* Затемняющий оверлей */
 .overlay {
-    display: none;
-    position: fixed;
-    top: 70px;
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 70px);
-    background: rgba(0,0,0,0.5);
-    z-index: 80;
+  display: none;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 70px);
+  background: rgba(0,0,0,0.5);
+  z-index: 80;
 }
 
 .overlay.active {
-    display: block;
+  display: block;
 }
 
 /* Список навигации */
 .nav-menu {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0 0 0;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0 0;
 }
 
 .nav-menu li {
-    margin: 0;
+  margin: 0;
 }
 
 .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 15px 20px;
-    color: #333;
-    text-decoration: none;
-    font-family: Arial, Helvetica, sans-serif;
-    transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  color: #333;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background 0.2s;
 }
 
 .nav-link i {
-    font-size: 1.3rem;
-    width: 24px;
-    text-align: center;
+  font-size: 1.3rem;
+  width: 24px;
+  text-align: center;
 }
 
 .nav-link:hover {
-    background-color: rgb(225, 239, 251);
+  background-color: rgb(225, 239, 251);
 }
 
 .nav-link.active {
-    background-color: rgb(225, 239, 251);
-    color: rgb(0, 108, 220);
-    font-weight: bold;
+  background-color: rgb(225, 239, 251);
+  color: rgb(0, 108, 220);
+  font-weight: bold;
 }
-    ```
-4. Страница "Автор":
-    ```html
-    <div id="author-page" class="page" style="display: none;">
-      <h2>Автор</h2>
-      <p>ФИО: Крахмальникова А. И.</p>
-      <p>Группа: ИУ5-46Б</p>
-      <a href="https://github.com/Asgdhd/JavaScript_2026" target="_blank">GitHub</a>
-    </div>
-    ```
+```
 
-    ```css
-    #author-page {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    font-family: Arial, Helvetica, sans-serif;
+4. Страница "Автор"
+```html
+<div id="author-page" class="page" style="display: none;">
+  <h2>Автор</h2>
+  <p>ФИО: Крахмальникова А. И.</p>
+  <p>Группа: ИУ5-46Б</p>
+  <a href="https://github.com/Asgdhd/JavaScript_2026" target="_blank">GitHub</a>
+</div>
+```
+
+```css
+#author-page {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  font-family: Arial, Helvetica, sans-serif;
 }
-    ```
+```
 
 5. Адаптивность
-    ```css
-    @media (min-width: 769px) {
-    /* На широком экране меню всегда открыто */
-    .sidebar {
-        transform: translateX(0);
-    }
-    .menu-toggle {
-        display: none;
-    }
-    .overlay {
-        display: none !important;
-    }
-    .main-content {
-        margin-left: 250px; /* освобождаем место под меню */
-        width: calc(100% - 250px);
-    }
+
+```css
+@media (min-width: 769px) {
+  /* На широком экране меню всегда открыто */
+  .sidebar {
+    transform: translateX(0);
+  }
+  .menu-toggle {
+    display: none;
+  }
+  .overlay {
+    display: none !important;
+  }
+  .main-content {
+    margin-left: 250px; /* освобождаем место под меню */
+    width: calc(100% - 250px);
+  }
 }
 
 @media (max-width: 768px) {
-    /* На узких экранах гамбургер виден, меню скрыто по умолчанию */
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-    }
-    /* Сайдбар скрыт, открывается по кнопке */
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    .sidebar.open {
-        transform: translateX(0);
-    }
+  /* На узких экранах гамбургер виден, меню скрыто по умолчанию */
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+  /* Сайдбар скрыт, открывается по кнопке */
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
 }
-    ```
+```
+
