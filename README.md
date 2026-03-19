@@ -2,13 +2,13 @@
 
 **Цель** данной лабораторной работы - знакомство с инструментами построения пользовательских интерфейсов web-сайтов: HTML, CSS, JavaScript. В ходе выполнения работы, вам предстоит продолжить реализовывать простой калькулятор, и затем выполнить задания по варианту.
 
-## План
-
-1. Программирование логики с помощью JavaScript
-2. Доступ к HTML-элементам из JavaScript
-3. Программирование кнопок калькулятора
-4. Запуск калькулятора с помощью LiveServer
-5. Задание
+## Содержание
+- [1. Программирование логики с помощью JavaScript](#1-программирование-логики-с-помощью-javascript)
+- [2. Доступ к HTML-элементам из JavaScript](#2-доступ-к-html-элементам-из-javascript)
+- [3. Программирование кнопок калькулятора](#3-программирование-кнопок-калькулятора)
+- [4. Запуск калькулятора с помощью LiveServer](#4-запуск-калькулятора-с-помощью-liveserver)
+- [5. Задания для самостоятельной проработки](#5-задания-для-самостоятельной-проработки)
+- [6. Выполненные дополнительные задания](#6-выполненные-дополнительные-задания)
 
 ## 1. Программирование логики с помощью JavaScript
 
@@ -399,3 +399,215 @@ window.onload = function(){
 8. Для тройного нуля просто добавьте "000" к строке
 9. Для накапливаемых операций сохраняйте предыдущий результат
 10. Для индивидуальной операции проявите фантазию!
+
+## 6. Выполненные дополнительные задания
+1. Кнопка pi:
+    ```js
+        document.getElementById("btn_pi").onclick = function() {
+        const piValue = Math.PI.toString();
+        if (!selectedOperation) {
+            a = piValue;
+            outputElement.innerHTML = a;
+        } else {
+            b = piValue;
+            outputElement.innerHTML = b;
+        }
+    };
+    ```
+
+2. Операция стирания введенного символа:
+       
+    ```js
+        document.getElementById("btn_op_erase").onclick = function() {
+        if (selectedOperation && b !== '') {
+            b = b.slice(0, -1);
+            if (b === '' || b === '-') {
+                b = '';
+                outputElement.innerHTML = '0';
+            } else {
+                outputElement.innerHTML = b;
+            }
+        } else if (!selectedOperation && a !== '') {
+            a = a.slice(0, -1);
+            if (a === '' || a === '-') {
+                a = '';
+                outputElement.innerHTML = '0';
+            } else {
+                outputElement.innerHTML = a;
+            }
+        } else {
+            outputElement.innerHTML = '0';
+        }
+        };
+    ```
+
+3. Вычисление факториала:
+
+    ```js
+        function factorial(n) {
+        if (!Number.isInteger(n) || n < 0) {
+            console.error('Факториал определён только для целых неотрицательных чисел');
+            return null;
+        }
+        if (n === 0) return 1;
+        let result = 1;
+        for (let i = 2; i <= n; i++) {
+            result *= i;
+            if (!isFinite(result)) {
+                console.error('Слишком большое число');
+                return null;
+            }
+        }
+        return result;
+    }
+
+        document.getElementById("btn_op_factorial").onclick = function() {
+        if (selectedOperation && b !== '') {
+            let num = parseFloat(b);
+            if (isNaN(num)) return;
+            let fact = factorial(num);
+            if (fact !== null) {
+                b = fact.toString();
+                outputElement.innerHTML = b;
+            }
+        } else if (!selectedOperation && a !== '') {
+            let num = parseFloat(a);
+            if (isNaN(num)) return;
+            let fact = factorial(num);
+            if (fact !== null) {
+                a = fact.toString();
+                outputElement.innerHTML = a;
+            }
+        }
+    };
+    ```
+
+4. Оператор смены знака числа:
+   ```js
+       document.getElementById("btn_op_sign").onclick = function() {
+        if (selectedOperation && b !== '') {
+            b = (-parseFloat(b)).toString();
+            outputElement.innerHTML = b;
+        } else if (!selectedOperation && a !== '') {
+            a = (-parseFloat(a)).toString();
+            outputElement.innerHTML = a;
+        }
+    };
+   ```
+
+5. Оператор вычисления процента %:
+   ```js
+        document.getElementById("btn_op_percent").onclick = function() {
+        if (selectedOperation && b !== '') {
+            b = (parseFloat(b) / 100).toString();
+            outputElement.innerHTML = b;
+        } else if (!selectedOperation && a !== '') {
+            a = (parseFloat(a) / 100).toString();
+            outputElement.innerHTML = a;
+        }
+    };
+   ```
+
+6. Переключение темы:
+   ```js
+       const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-theme');
+        themeToggle.textContent = '☀';
+    } else {
+        themeToggle.textContent = '☾';
+    }
+
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        themeToggle.textContent = isDark ? '☀' : '☾';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+   ```
+
+7. Логика меню и страниц
+   ```js
+   const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const pages = document.querySelectorAll('.page');
+
+    // Функция открытия/закрытия меню на мобильных
+    function toggleMenu(force) {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.toggle('open', force);
+            overlay.classList.toggle('active', force);
+        }
+    }
+
+    // Гамбургер
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => toggleMenu());
+    }
+
+    // Оверлей
+    if (overlay) {
+        overlay.addEventListener('click', () => toggleMenu(false));
+    }
+
+    // Переключение страниц
+    function showPage(pageId) {
+        pages.forEach(page => page.style.display = 'none');
+        document.getElementById(pageId).style.display = 'block';
+    }
+
+    // Активный пункт меню
+    function setActiveLink(linkId) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const activeLink = document.getElementById(linkId);
+        if (activeLink) activeLink.classList.add('active');
+    }
+
+    // Обработчики кликов по пунктам меню
+    document.getElementById('nav-home').addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage('home-page');
+        setActiveLink('nav-home');
+        toggleMenu(false); // закрыть меню после выбора (на мобильных)
+    });
+
+    document.getElementById('nav-author').addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage('author-page');
+        setActiveLink('nav-author');
+        toggleMenu(false);
+    });
+
+    document.getElementById('nav-calc').addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage('calculator-page');
+        setActiveLink('nav-calc');
+        toggleMenu(false);
+    });
+
+    // При изменении размера окна
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            // На широком экране меню открыто, оверлей скрыт
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        } else {
+            // На узком экране меню должно быть закрыто
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+    });
+
+    // Инициализация: показываем калькулятор, активный пункт
+    showPage('calculator-page');
+    setActiveLink('nav-calc');
+    };
+    ```
+
+
+
