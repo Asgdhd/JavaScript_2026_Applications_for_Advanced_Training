@@ -1,75 +1,99 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="ru">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Калькулятор</title>
+  <!-- Иконки PrimeIcons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/primeicons@7.0.0/primeicons.css">
+  <!-- Основные стили -->
   <link rel="stylesheet" href="calculator.css">
-  <script type="text/javascript" src="script.js"></script>
-
+  <!-- Скрипт -->
+  <script src="script.js" defer></script>
 </head>
-
 <body>
+  <!-- Шапка с синим фоном -->
   <header class="bmstu-header">
-    <details class="author-details">
-      <summary>Автор</summary>
-      <p>ФИО: Крахмальникова А. И.</p>
-      <p>Группа: ИУ5-46Б</p>
-      <a href="https://github.com/Asgdhd/JavaScript_2026" target="_blank">GitHub</a>
-    </details>
+    <!-- Кнопка-гамбургер -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Меню"><i class="pi pi-bars" style="font-size: 1.5rem;"></i></button>
+    <!-- Переключатель темы -->
     <button id="theme-toggle" class="theme-btn">☾</button>
   </header>
 
+  <!-- Боковое меню -->
+  <aside class="sidebar" id="sidebar">
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="#" id="nav-home" class="nav-link active"><i class="pi pi-home"></i> Главная</a></li>
+        <li><a href="#" id="nav-author" class="nav-link"><i class="pi pi-user"></i> Автор</a></li>
+        <li><a href="#" id="nav-calc" class="nav-link"><i class="pi pi-calculator"></i> Калькулятор</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-  <div class="calculator"> <!-- div - это базовый html-контейнер, который может содержать в себе другие html-элементы. -->
+  <!-- Затемняющий оверлей -->
+  <div class="overlay" id="overlay"></div>
 
-    <!-- блок с экраном калькулятора, где будет выводиться результат вычислений. -->
-    <div id="result" class="result">
-      0
+  <!-- Основной контент (страницы) -->
+  <main class="main-content">
+    <!-- Главная страница -->
+    <div id="home-page" class="page" style="display: none;">
+      <h2>Это главная страница</h2>
     </div>
 
-    <!-- блок с кнопками калькулятора. -->
-    <div>
-      <!--горизонтальный ряд из четырех кнопок-->
-      <div>
-        <button id="btn_op_percent" class="my-btn tertiary">%</button>
-        <button id="btn_op_factorial" class="my-btn tertiary">x!</button>
-        <button id="btn_pi" class="my-btn tertiary">π</button>
-      </div>
+    <!-- Страница "Автор" -->
+    <div id="author-page" class="page" style="display: none;">
+      <h2>Автор</h2>
+      <p>ФИО: Крахмальникова А. И.</p>
+      <p>Группа: ИУ5-46Б</p>
+      <a href="https://github.com/Asgdhd/JavaScript_2026" target="_blank">GitHub</a>
+    </div>
 
-      <div>
-        <button id="btn_op_erase" class="my-btn secondary">CE</button>
-        <button id="btn_op_clear" class="my-btn secondary">C</button>    <!-- про тэг кнопки: https://www.w3schools.com/tags/tag_button.asp -->
-        <button id="btn_op_sign" class="my-btn secondary">+/-</button>
-        <button id="btn_op_div" class="my-btn primary">/</button>
-      </div>
+    <!-- Страница "Калькулятор" -->
+    <div id="calculator-page" class="page">
+      <div class="calculator">
+        <!-- Экран -->
+        <div id="result" class="result">0</div>
 
-      <div>
-        <button id="btn_digit_7" class="my-btn">7</button>
-        <button id="btn_digit_8" class="my-btn">8</button>
-        <button id="btn_digit_9" class="my-btn">9</button>
-        <button id="btn_op_mult" class="my-btn primary">x</button>
-      </div>
-
-      <div>
-        <button id="btn_digit_4" class="my-btn">4</button>
-        <button id="btn_digit_5" class="my-btn">5</button>
-        <button id="btn_digit_6" class="my-btn">6</button>
-        <button id="btn_op_minus" class="my-btn primary">-</button>
-      </div>
-
-      <div>
-        <button id="btn_digit_1" class="my-btn">1</button>
-        <button id="btn_digit_2" class="my-btn">2</button>
-        <button id="btn_digit_3" class="my-btn">3</button>
-        <button id="btn_op_plus" class="my-btn primary">+</button>
-      </div>
-
-      <div>
-        <button id="btn_digit_0" class="my-btn">0</button>
-        <button id="btn_digit_dot" class="my-btn">.</button>
-        <button id="btn_op_equal" class="my-btn primary execute">=</button>
+        <!-- Кнопки -->
+        <div>
+          <div>
+            <button id="btn_op_percent" class="my-btn tertiary">%</button>
+            <button id="btn_op_factorial" class="my-btn tertiary">x!</button>
+            <button id="btn_pi" class="my-btn tertiary">π</button>
+          </div>
+          <div>
+            <button id="btn_op_erase" class="my-btn secondary">CE</button>
+            <button id="btn_op_clear" class="my-btn secondary">C</button>
+            <button id="btn_op_sign" class="my-btn secondary">+/-</button>
+            <button id="btn_op_div" class="my-btn primary">/</button>
+          </div>
+          <div>
+            <button id="btn_digit_7" class="my-btn">7</button>
+            <button id="btn_digit_8" class="my-btn">8</button>
+            <button id="btn_digit_9" class="my-btn">9</button>
+            <button id="btn_op_mult" class="my-btn primary">x</button>
+          </div>
+          <div>
+            <button id="btn_digit_4" class="my-btn">4</button>
+            <button id="btn_digit_5" class="my-btn">5</button>
+            <button id="btn_digit_6" class="my-btn">6</button>
+            <button id="btn_op_minus" class="my-btn primary">-</button>
+          </div>
+          <div>
+            <button id="btn_digit_1" class="my-btn">1</button>
+            <button id="btn_digit_2" class="my-btn">2</button>
+            <button id="btn_digit_3" class="my-btn">3</button>
+            <button id="btn_op_plus" class="my-btn primary">+</button>
+          </div>
+          <div>
+            <button id="btn_digit_0" class="my-btn">0</button>
+            <button id="btn_digit_dot" class="my-btn">.</button>
+            <button id="btn_op_equal" class="my-btn primary execute">=</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 </body>
 </html>

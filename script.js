@@ -1,4 +1,5 @@
 window.onload = function() {
+    // ========== ЛОГИКА КАЛЬКУЛЯТОРА ==========
     let a = '';                // Первое число
     let b = '';                // Второе число
     let selectedOperation = null; // Выбранная операция
@@ -6,15 +7,12 @@ window.onload = function() {
     const outputElement = document.getElementById("result");
     const digitButtons = document.querySelectorAll('[id ^= "btn_digit_"]');
 
-    // Обработка цифр и точки
     function onDigitButtonClicked(digit) {
         if (!selectedOperation) {
-            // Ввод первого числа (или результата)
-            if (digit === '.' && a.includes('.')) return; // запрет второй точки
+            if (digit === '.' && a.includes('.')) return;
             a += digit;
             outputElement.innerHTML = a;
         } else {
-            // Ввод второго числа
             if (digit === '.' && b.includes('.')) return;
             b += digit;
             outputElement.innerHTML = b;
@@ -27,7 +25,6 @@ window.onload = function() {
         };
     });
 
-    // Функция вычисления текущего выражения
     function compute() {
         if (a === '' || b === '' || !selectedOperation) return;
 
@@ -38,7 +35,7 @@ window.onload = function() {
             case '-': result = (+a) - (+b); break;
             case '/':
                 if (+b === 0) {
-                    alert('Деление на ноль!');
+                    console.error('Деление на ноль!');
                     return;
                 }
                 result = (+a) / (+b);
@@ -52,30 +49,22 @@ window.onload = function() {
         outputElement.innerHTML = a;
     }
 
-    // Общий обработчик для операций
     function handleOperation(op) {
-        if (a === '') return;        // нет первого числа – игнорируем
-
-        // Если уже есть оба числа и операция – сначала вычисляем
+        if (a === '') return;
         if (selectedOperation && b !== '') {
             compute();
         }
-
-        // Устанавливаем новую операцию
         selectedOperation = op;
-        outputElement.innerHTML = op; // показываем символ операции
+        outputElement.innerHTML = op;
     }
 
-    // Кнопки операций
     document.getElementById("btn_op_mult").onclick = function() { handleOperation('x'); };
     document.getElementById("btn_op_plus").onclick  = function() { handleOperation('+'); };
     document.getElementById("btn_op_minus").onclick = function() { handleOperation('-'); };
     document.getElementById("btn_op_div").onclick  = function() { handleOperation('/'); };
 
-
-    // Кнопка π
     document.getElementById("btn_pi").onclick = function() {
-        const piValue = Math.PI.toString(); // "3.141592653589793"
+        const piValue = Math.PI.toString();
         if (!selectedOperation) {
             a = piValue;
             outputElement.innerHTML = a;
@@ -85,7 +74,6 @@ window.onload = function() {
         }
     };
 
-    // Стирание последнего символа (CE)
     document.getElementById("btn_op_erase").onclick = function() {
         if (selectedOperation && b !== '') {
             b = b.slice(0, -1);
@@ -104,32 +92,27 @@ window.onload = function() {
                 outputElement.innerHTML = a;
             }
         } else {
-            // Если нечего стирать
             outputElement.innerHTML = '0';
         }
     };
 
     function factorial(n) {
-        // Проверка: n должно быть целым неотрицательным числом
         if (!Number.isInteger(n) || n < 0) {
-            alert('Факториал определён только для целых неотрицательных чисел');
+            console.error('Факториал определён только для целых неотрицательных чисел');
             return null;
         }
         if (n === 0) return 1;
         let result = 1;
         for (let i = 2; i <= n; i++) {
             result *= i;
-            // Защита от переполнения
             if (!isFinite(result)) {
-                alert('Слишком большое число');
+                console.error('Слишком большое число');
                 return null;
             }
         }
         return result;
     }
 
-
-   // Факториал
     document.getElementById("btn_op_factorial").onclick = function() {
         if (selectedOperation && b !== '') {
             let num = parseFloat(b);
@@ -150,9 +133,6 @@ window.onload = function() {
         }
     };
 
-
-
-   // Смена знака
     document.getElementById("btn_op_sign").onclick = function() {
         if (selectedOperation && b !== '') {
             b = (-parseFloat(b)).toString();
@@ -163,7 +143,6 @@ window.onload = function() {
         }
     };
 
-    // Процент (деление на 100)
     document.getElementById("btn_op_percent").onclick = function() {
         if (selectedOperation && b !== '') {
             b = (parseFloat(b) / 100).toString();
@@ -174,7 +153,6 @@ window.onload = function() {
         }
     };
 
-    // Очистка
     document.getElementById("btn_op_clear").onclick = function() {
         a = '';
         b = '';
@@ -182,31 +160,105 @@ window.onload = function() {
         outputElement.innerHTML = '0';
     };
 
-    // Равно
     document.getElementById("btn_op_equal").onclick = function() {
         if (a !== '' && b !== '' && selectedOperation) {
             compute();
         }
     };
 
-    // Логика переключения темы
+    // ========== ПЕРЕКЛЮЧЕНИЕ ТЕМЫ ==========
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
 
-    // Загружаем сохранённую тему
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
         body.classList.add('dark-theme');
-        themeToggle.textContent = '☀'; // солнце переключит на светлую
+        themeToggle.textContent = '☀';
     } else {
-        themeToggle.textContent = '☾'; // луна переключит на тёмную
+        themeToggle.textContent = '☾';
     }
 
-    // Обработчик клика
     themeToggle.addEventListener('click', () => {
         body.classList.toggle('dark-theme');
         const isDark = body.classList.contains('dark-theme');
         themeToggle.textContent = isDark ? '☀' : '☾';
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
+
+    // ========== ЛОГИКА МЕНЮ И СТРАНИЦ ==========
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const pages = document.querySelectorAll('.page');
+
+    // Функция открытия/закрытия меню на мобильных
+    function toggleMenu(force) {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.toggle('open', force);
+            overlay.classList.toggle('active', force);
+        }
+    }
+
+    // Гамбургер
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => toggleMenu());
+    }
+
+    // Оверлей
+    if (overlay) {
+        overlay.addEventListener('click', () => toggleMenu(false));
+    }
+
+    // Переключение страниц
+    function showPage(pageId) {
+        pages.forEach(page => page.style.display = 'none');
+        document.getElementById(pageId).style.display = 'block';
+    }
+
+    // Активный пункт меню
+    function setActiveLink(linkId) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const activeLink = document.getElementById(linkId);
+        if (activeLink) activeLink.classList.add('active');
+    }
+
+    // Обработчики кликов по пунктам меню
+    document.getElementById('nav-home').addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage('home-page');
+        setActiveLink('nav-home');
+        toggleMenu(false); // закрыть меню после выбора (на мобильных)
+    });
+
+    document.getElementById('nav-author').addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage('author-page');
+        setActiveLink('nav-author');
+        toggleMenu(false);
+    });
+
+    document.getElementById('nav-calc').addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage('calculator-page');
+        setActiveLink('nav-calc');
+        toggleMenu(false);
+    });
+
+    // При изменении размера окна
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            // На широком экране меню открыто, оверлей скрыт
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        } else {
+            // На узком экране меню должно быть закрыто
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+    });
+
+    // Инициализация: показываем калькулятор, активный пункт
+    showPage('calculator-page');
+    setActiveLink('nav-calc');
 };
