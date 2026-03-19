@@ -1,21 +1,118 @@
 window.onload = function() {
     // ========== ЛОГИКА КАЛЬКУЛЯТОРА ==========
-    let a = '';                // Первое число
-    let b = '';                // Второе число
-    let selectedOperation = null; // Выбранная операция
+    let a = '';
+    let b = '';
+    let selectedOperation = null;
+    let errorFlag = false;
+
+    // Переменные для управления масштабированием шрифта
+    let shrinkCount = 0;
+    const maxShrink = 3;
+    const shrinkFactor = 0.8;   // уменьшение на 20% при каждом шаге
+    let blockInput = false;     // блокировка ввода новых символов
+    let baseFontSize = 24;      // будет установлена позже
 
     const outputElement = document.getElementById("result");
     const digitButtons = document.querySelectorAll('[id ^= "btn_digit_"]');
 
+    // Определяем базовый размер шрифта в пикселях
+    function initBaseFontSize() {
+        baseFontSize = parseFloat(window.getComputedStyle(outputElement).fontSize);
+        if (isNaN(baseFontSize) || baseFontSize <= 0) baseFontSize = 24;
+        outputElement.style.fontSize = baseFontSize + 'px';
+    }
+
+    // Функция проверки переполнения
+    function isOverflow() {
+        void outputElement.offsetWidth; // принудительный reflow
+        return outputElement.scrollWidth > outputElement.clientWidth;
+    }
+
+    // Универсальная функция подстройки размера шрифта под содержимое
+    function adjustFontSize() {
+        if (outputElement.innerHTML === 'Error' || outputElement.innerHTML === '0' || outputElement.innerHTML === '') {
+            return;
+        }
+
+        let overflow = isOverflow();
+        let iterations = 0;
+        const maxIterations = 20;
+
+        // Уменьшаем шрифт при переполнении, если есть лимит
+        while (overflow && shrinkCount < maxShrink && iterations < maxIterations) {
+            let currentSize = parseFloat(window.getComputedStyle(outputElement).fontSize);
+            if (isNaN(currentSize) || currentSize <= 1) break;
+            let newSize = currentSize * shrinkFactor;
+            outputElement.style.fontSize = newSize + 'px';
+            shrinkCount++;
+            overflow = isOverflow();
+            iterations++;
+        }
+
+        // Увеличиваем шрифт, если есть свободное место и были уменьшения
+        while (!overflow && shrinkCount > 0 && iterations < maxIterations) {
+            let currentSize = parseFloat(window.getComputedStyle(outputElement).fontSize);
+            let potentialSize = currentSize / shrinkFactor;
+            if (potentialSize > baseFontSize) potentialSize = baseFontSize;
+            outputElement.style.fontSize = potentialSize + 'px';
+            let newOverflow = isOverflow();
+            if (newOverflow) {
+                // Если увеличение вызвало переполнение, возвращаем старый размер
+                outputElement.style.fontSize = currentSize + 'px';
+                break;
+            } else {
+                shrinkCount--;
+                overflow = false;
+            }
+            iterations++;
+        }
+
+        // Блокировка ввода: если исчерпан лимит И в данный момент есть переполнение
+        blockInput = (shrinkCount >= maxShrink) && isOverflow();
+    }
+
+    // Полный сброс масштабирования (устанавливаем базовый размер)
+    function resetFontScaling() {
+        outputElement.style.fontSize = baseFontSize + 'px';
+        shrinkCount = 0;
+        blockInput = false;
+    }
+
+    // Установка состояния ошибки
+    function setError() {
+        outputElement.innerHTML = 'Error';
+        a = '';
+        b = '';
+        selectedOperation = null;
+        errorFlag = true;
+        resetFontScaling();
+    }
+
+    // Обработчик нажатия на цифры и точку
     function onDigitButtonClicked(digit) {
+        if (blockInput) return;
+
+        if (errorFlag) {
+            errorFlag = false;
+            resetFontScaling(); // начинаем новое число с чистого листа
+            a = digit;
+            b = '';
+            selectedOperation = null;
+            outputElement.innerHTML = a;
+            adjustFontSize();
+            return;
+        }
+
         if (!selectedOperation) {
             if (digit === '.' && a.includes('.')) return;
             a += digit;
             outputElement.innerHTML = a;
+            adjustFontSize();
         } else {
             if (digit === '.' && b.includes('.')) return;
             b += digit;
             outputElement.innerHTML = b;
+            adjustFontSize();
         }
     }
 
@@ -25,6 +122,7 @@ window.onload = function() {
         };
     });
 
+    // Вычисление результата
     function compute() {
         if (a === '' || b === '' || !selectedOperation) return;
 
@@ -35,7 +133,7 @@ window.onload = function() {
             case '-': result = (+a) - (+b); break;
             case '/':
                 if (+b === 0) {
-                    console.error('Деление на ноль!');
+                    setError();
                     return;
                 }
                 result = (+a) / (+b);
@@ -43,19 +141,39 @@ window.onload = function() {
             default: return;
         }
 
+        if (!isFinite(result)) {
+            setError();
+            return;
+        }
+
         a = result.toString();
         b = '';
         selectedOperation = null;
+        // Результат — новое число, сбрасываем масштабирование и применяем
+        resetFontScaling();
         outputElement.innerHTML = a;
+        adjustFontSize();
     }
 
+    // Обработчик бинарных операций
     function handleOperation(op) {
+        if (errorFlag) {
+            errorFlag = false;
+            a = '';
+            resetFontScaling();
+        }
         if (a === '') return;
+
+        // Если уже есть операция и второе число, сначала вычисляем
         if (selectedOperation && b !== '') {
             compute();
+            if (errorFlag) return;
         }
+        // Переходим к новой операции: показываем оператор (сбрасываем масштаб)
         selectedOperation = op;
+        resetFontScaling();
         outputElement.innerHTML = op;
+        adjustFontSize(); // оператор обычно короткий, но проверим
     }
 
     document.getElementById("btn_op_mult").onclick = function() { handleOperation('x'); };
@@ -63,18 +181,36 @@ window.onload = function() {
     document.getElementById("btn_op_minus").onclick = function() { handleOperation('-'); };
     document.getElementById("btn_op_div").onclick  = function() { handleOperation('/'); };
 
+    // Кнопка π (ввод числа Пи)
     document.getElementById("btn_pi").onclick = function() {
+        if (blockInput) return; // если ввод заблокирован, π тоже не добавляем
+        if (errorFlag) errorFlag = false;
         const piValue = Math.PI.toString();
         if (!selectedOperation) {
+            // Начинаем новое первое число
+            resetFontScaling();
             a = piValue;
             outputElement.innerHTML = a;
         } else {
+            // Начинаем новое второе число
+            resetFontScaling();
             b = piValue;
             outputElement.innerHTML = b;
         }
+        adjustFontSize();
     };
 
+    // Кнопка стирания (CE)
     document.getElementById("btn_op_erase").onclick = function() {
+        if (errorFlag) {
+            a = '';
+            b = '';
+            selectedOperation = null;
+            errorFlag = false;
+            outputElement.innerHTML = '0';
+            resetFontScaling();
+            return;
+        }
         if (selectedOperation && b !== '') {
             b = b.slice(0, -1);
             if (b === '' || b === '-') {
@@ -94,11 +230,13 @@ window.onload = function() {
         } else {
             outputElement.innerHTML = '0';
         }
+        adjustFontSize(); // после удаления проверяем, можно ли увеличить шрифт
     };
 
+    // Факториал
     function factorial(n) {
         if (!Number.isInteger(n) || n < 0) {
-            console.error('Факториал определён только для целых неотрицательных чисел');
+            setError();
             return null;
         }
         if (n === 0) return 1;
@@ -106,7 +244,7 @@ window.onload = function() {
         for (let i = 2; i <= n; i++) {
             result *= i;
             if (!isFinite(result)) {
-                console.error('Слишком большое число');
+                setError();
                 return null;
             }
         }
@@ -114,6 +252,7 @@ window.onload = function() {
     }
 
     document.getElementById("btn_op_factorial").onclick = function() {
+        if (errorFlag) errorFlag = false;
         if (selectedOperation && b !== '') {
             let num = parseFloat(b);
             if (isNaN(num)) return;
@@ -121,6 +260,7 @@ window.onload = function() {
             if (fact !== null) {
                 b = fact.toString();
                 outputElement.innerHTML = b;
+                adjustFontSize();
             }
         } else if (!selectedOperation && a !== '') {
             let num = parseFloat(a);
@@ -129,38 +269,52 @@ window.onload = function() {
             if (fact !== null) {
                 a = fact.toString();
                 outputElement.innerHTML = a;
+                adjustFontSize();
             }
         }
     };
 
+    // Смена знака
     document.getElementById("btn_op_sign").onclick = function() {
+        if (errorFlag) errorFlag = false;
         if (selectedOperation && b !== '') {
             b = (-parseFloat(b)).toString();
             outputElement.innerHTML = b;
+            adjustFontSize();
         } else if (!selectedOperation && a !== '') {
             a = (-parseFloat(a)).toString();
             outputElement.innerHTML = a;
+            adjustFontSize();
         }
     };
 
+    // Процент
     document.getElementById("btn_op_percent").onclick = function() {
+        if (errorFlag) errorFlag = false;
         if (selectedOperation && b !== '') {
             b = (parseFloat(b) / 100).toString();
             outputElement.innerHTML = b;
+            adjustFontSize();
         } else if (!selectedOperation && a !== '') {
             a = (parseFloat(a) / 100).toString();
             outputElement.innerHTML = a;
+            adjustFontSize();
         }
     };
 
+    // Полная очистка (C)
     document.getElementById("btn_op_clear").onclick = function() {
         a = '';
         b = '';
         selectedOperation = null;
+        errorFlag = false;
         outputElement.innerHTML = '0';
+        resetFontScaling();
     };
 
+    // Равно
     document.getElementById("btn_op_equal").onclick = function() {
+        if (errorFlag) return;
         if (a !== '' && b !== '' && selectedOperation) {
             compute();
         }
@@ -192,7 +346,6 @@ window.onload = function() {
     const navLinks = document.querySelectorAll('.nav-link');
     const pages = document.querySelectorAll('.page');
 
-    // Функция открытия/закрытия меню на мобильных
     function toggleMenu(force) {
         if (window.innerWidth <= 768) {
             sidebar.classList.toggle('open', force);
@@ -200,35 +353,30 @@ window.onload = function() {
         }
     }
 
-    // Гамбургер
     if (menuToggle) {
         menuToggle.addEventListener('click', () => toggleMenu());
     }
 
-    // Оверлей
     if (overlay) {
         overlay.addEventListener('click', () => toggleMenu(false));
     }
 
-    // Переключение страниц
     function showPage(pageId) {
         pages.forEach(page => page.style.display = 'none');
         document.getElementById(pageId).style.display = 'block';
     }
 
-    // Активный пункт меню
     function setActiveLink(linkId) {
         navLinks.forEach(link => link.classList.remove('active'));
         const activeLink = document.getElementById(linkId);
         if (activeLink) activeLink.classList.add('active');
     }
 
-    // Обработчики кликов по пунктам меню
     document.getElementById('nav-home').addEventListener('click', (e) => {
         e.preventDefault();
         showPage('home-page');
         setActiveLink('nav-home');
-        toggleMenu(false); // закрыть меню после выбора (на мобильных)
+        toggleMenu(false);
     });
 
     document.getElementById('nav-author').addEventListener('click', (e) => {
@@ -245,20 +393,22 @@ window.onload = function() {
         toggleMenu(false);
     });
 
-    // При изменении размера окна
     window.addEventListener('resize', () => {
         if (window.innerWidth > 768) {
-            // На широком экране меню открыто, оверлей скрыт
             sidebar.classList.remove('open');
             overlay.classList.remove('active');
         } else {
-            // На узком экране меню должно быть закрыто
             sidebar.classList.remove('open');
             overlay.classList.remove('active');
         }
+        // При изменении размера окна пересчитываем масштабирование
+        adjustFontSize();
     });
 
-    // Инициализация: показываем калькулятор, активный пункт
+    // Инициализация
     showPage('calculator-page');
     setActiveLink('nav-calc');
+    initBaseFontSize();   // запоминаем базовый размер шрифта
+    resetFontScaling();   // устанавливаем исходный размер
+    outputElement.innerHTML = '0';
 };

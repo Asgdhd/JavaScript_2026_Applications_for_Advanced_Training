@@ -416,7 +416,7 @@ window.onload = function(){
     ```
 
 2. Операция стирания введенного символа:
-       
+
     ```js
         document.getElementById("btn_op_erase").onclick = function() {
         if (selectedOperation && b !== '') {
@@ -483,7 +483,7 @@ window.onload = function(){
     ```
 
 4. Оператор смены знака числа:
-   ```js
+    ```js
        document.getElementById("btn_op_sign").onclick = function() {
         if (selectedOperation && b !== '') {
             b = (-parseFloat(b)).toString();
@@ -493,10 +493,10 @@ window.onload = function(){
             outputElement.innerHTML = a;
         }
     };
-   ```
+    ```
 
 5. Оператор вычисления процента %:
-   ```js
+    ```js
         document.getElementById("btn_op_percent").onclick = function() {
         if (selectedOperation && b !== '') {
             b = (parseFloat(b) / 100).toString();
@@ -506,10 +506,10 @@ window.onload = function(){
             outputElement.innerHTML = a;
         }
     };
-   ```
+    ```
 
 6. Переключение темы:
-   ```js
+    ```js
        const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
 
@@ -527,10 +527,10 @@ window.onload = function(){
         themeToggle.textContent = isDark ? '☀' : '☾';
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
-   ```
+    ```
 
 7. Логика меню и страниц
-   ```js
+    ```js
    const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
     const menuToggle = document.getElementById('menuToggle');
@@ -609,5 +609,83 @@ window.onload = function(){
     };
     ```
 
+8. Уменьшение шрифта для того, чтобы цифры помещались в область вывода калькулятора:
+    ```js
+    // Переменные для управления масштабированием шрифта
+        let shrinkCount = 0;
+        const maxShrinkTimes = 3;
+        const shrinkFactor = 0.8;
+        let blockInput = false;
+        let baseFontSize = 24;
 
+    function adjustFontSize() {
+        if (outputElement.innerHTML === 'Error' || outputElement.innerHTML === '0' || outputElement.innerHTML === '') {
+            return;
+        }
 
+        function isOverflow() {
+            void outputElement.offsetWidth;
+            return outputElement.scrollWidth > outputElement.clientWidth;
+        }
+
+        let overflow = isOverflow();
+        let iterations = 0;
+        const maxIterations = 20;
+
+        // Уменьшаем шрифт, если есть переполнение и можно уменьшить
+        while (overflow && shrinkCount < maxShrinkTimes && iterations < maxIterations) {
+            let currentSize = parseFloat(window.getComputedStyle(outputElement).fontSize);
+            if (isNaN(currentSize) || currentSize <= 1) break;
+            let newSize = currentSize * shrinkFactor;
+            outputElement.style.fontSize = newSize + 'px';
+            shrinkCount++;
+            overflow = isOverflow();
+            iterations++;
+        }
+
+        // Если переполнения нет, но шрифт меньше базового, пробуем увеличить
+        while (!overflow && shrinkCount > 0 && iterations < maxIterations) {
+            let currentSize = parseFloat(window.getComputedStyle(outputElement).fontSize);
+            // Пробуем вернуться к предыдущему размеру (делим на shrinkFactor)
+            let potentialSize = currentSize / shrinkFactor;
+
+            if (potentialSize > baseFontSize) potentialSize = baseFontSize;
+            outputElement.style.fontSize = potentialSize + 'px';
+            // Проверяем, не появилось ли переполнение после увеличения
+            let newOverflow = isOverflow();
+            if (newOverflow) {
+                // Если появилось — возвращаем старый размер и выходим
+                outputElement.style.fontSize = currentSize + 'px';
+                break;
+            } else {
+                // Увеличение успешно, уменьшаем счётчик
+                shrinkCount--;
+                // Продолжаем цикл, чтобы попробовать увеличить ещё
+            }
+            iterations++;
+        }
+
+        // Обновляем флаг блокировки ввода
+        blockInput = shrinkCount >= maxShrinkTimes;
+    }
+
+    // Полный сброс масштабирования (устанавливаем базовый размер)
+    function resetFontScaling() {
+        outputElement.style.fontSize = baseFontSize + 'px';
+        shrinkCount = 0;
+        blockInput = false;
+    }
+    ```
+
+9. Вывод сообщения об ошибке:
+    ```js
+    // Установка состояния ошибки
+    function setError() {
+        outputElement.innerHTML = 'Error';
+        a = '';
+        b = '';
+        selectedOperation = null;
+        errorFlag = true;
+        resetFontScaling();
+    }
+    ```
