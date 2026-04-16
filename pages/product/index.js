@@ -1,6 +1,9 @@
-import {ProductComponent} from "../../components/product/index.js";
-import {BackButtonComponent} from "../../components/back-button/index.js";
-import {MainPage} from "../main/index.js";
+import { HeaderComponent } from "../../components/header/index.js";
+import { SidebarComponent } from "../../components/sidebar/index.js";
+import { AccordionComponent } from "../../components/accordion/index.js";
+import { MainPage } from "../main/index.js";
+import { AuthorPage } from "../author/index.js";
+import { getCourseById } from "../../modules/store.js";
 
 export class ProductPage {
     constructor(parent, id) {
@@ -8,38 +11,37 @@ export class ProductPage {
         this.id = id;
     }
 
-    get pageRoot() {
-        return document.getElementById('product-page');
-    }
-
-    getHTML() {
-        return `<div id="product-page"></div>`;
-    }
-
-    getData() {
-        return {
-            id: this.id,
-            src: "https://i.pinimg.com/originals/c9/ea/65/c9ea654eb3a7398b1f702c758c1c4206.jpg",
-            title: `Акция ${this.id}`,
-            text: "Такой акции вы еще не видели"
-        };
-    }
-
-    clickBack() {
-        const mainPage = new MainPage(this.parent);
-        mainPage.render();
-    }
-
     render() {
-        this.parent.innerHTML = '';
-        const html = this.getHTML();
-        this.parent.insertAdjacentHTML('beforeend', html);
+        const course = getCourseById(this.id);
+        this.parent.innerHTML = `
+            <div id="header-container"></div>
+            <div id="sidebar-container"></div>
+            <main id="main-content">
+                <div class="container-fluid">
+                    <button id="back-btn" class="btn btn-secondary mb-3">Назад</button>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img src="${course.src}" class="img-fluid rounded" alt="${course.title}">
+                        </div>
+                        <div class="col-md-7">
+                            <h3>${course.title}</h3>
+                            <div id="accordion-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        `;
 
-        const backButton = new BackButtonComponent(this.pageRoot);
-        backButton.render(this.clickBack.bind(this));
+        const header = new HeaderComponent(document.getElementById('header-container'));
+        const sidebar = new SidebarComponent(document.getElementById('sidebar-container'));
 
-        const data = this.getData();
-        const product = new ProductComponent(this.pageRoot);
-        product.render(data);
+        header.render(() => new MainPage(this.parent).render(), () => sidebar.toggle());
+        sidebar.render(
+            () => new MainPage(this.parent).render(),
+            () => new AuthorPage(this.parent).render()
+        );
+
+        document.getElementById('back-btn').addEventListener('click', () => new MainPage(this.parent).render());
+        new AccordionComponent(document.getElementById('accordion-container')).render(course);
     }
 }
