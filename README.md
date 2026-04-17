@@ -2,17 +2,18 @@
 
 **Цель** данной лабораторной работы - знакомство с node, npm, написание простого приложения на JavaScript. В ходе выполнения работы, вам предстоит ознакомиться с кодом реализации простого интерфейса и вывода данных, и затем выполнить задания по варианту.
 
-## План
+## Содержание
 
-1. Инструменты для работы
-2. Что такое node, npm и package.json
-3. Как работать с html в JS
-4. Инициализация проекта
-5. Создание главной страницы, подключение bootstrap
-6. Простая кнопка на JavaScript
-7. Структурирование проекта
-8. Верстка главной страницы
-9. Верстка страницы продукта
+- [1. Инструменты для работы](#1-инструменты-для-работы)
+- [2. Что такое node, npm и package.json](#2-что-такое-node-npm-и-packagejson)
+- [3. Как работать с html в JS](#3-как-работать-с-html-в-js)
+- [4. Инициализация проекта](#4-инициализация-проекта)
+- [5. Создание главной страницы, подключение bootstrap](#5-создание-главной-страницы-подключение-bootstrap)
+- [6. Простая кнопка на JavaScript](#6-простая-кнопка-на-javascript)
+- [7. Структурирование проекта](#7-структурирование-проекта)
+- [8. Верстка главной страницы](#8-верстка-главной-страницы)
+- [9. Верстка страницы продукта](#9-верстка-страницы-продукта)
+- [10. Выполненные дополнительные задания](#9-выполненные-дополнительные-задания)
 
 ## 1. Инструменты для работы
 
@@ -837,3 +838,68 @@ render() {
 [insertAdjacentHTML]: https://developer.mozilla.org/ru/docs/Web/API/Element/insertAdjacentHTML
 [event]: https://developer.mozilla.org/ru/docs/Web/API/Event
 [addEventListener]: https://developer.mozilla.org/ru/docs/Web/API/EventTarget/addEventListener
+
+
+## 10. Выполненные дополнительные задания
+
+1. Удаление и возврат удаленных карточек курсов
+
+```javascript
+export const removeCourse = (id) => {
+    visibleCourses = visibleCourses.filter(c => c.id !== id);
+};
+
+export const restoreCourses = () => {
+    visibleCourses = [...allCourses];
+};
+```
+
+2. Добавление новой карточки курса с рандомными данными
+
+```javascript
+export const addRandomCourse = () => {
+    const getRandomField = (field) => {
+        const randomIndex = Math.floor(Math.random() * allCourses.length);
+        return allCourses[randomIndex][field];
+    };
+
+    const newCourse = {
+        id: Date.now(),
+        title: getRandomField('title'),
+        shortText: getRandomField('shortText'),
+        duration: getRandomField('duration'),
+        details: getRandomField('details'),
+        src: getRandomField('src')
+    };
+
+    visibleCourses.push(newCourse);
+};
+```
+
+3. Поиск курсов
+
+```javascript
+renderCards() {
+    const container = document.getElementById('cards-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    const filtered = visibleCourses.filter(c =>
+        c.title.toLowerCase().includes(this.searchQuery)
+    );
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="nothing-found">Ничего не найдено по вашему запросу</div>`;
+        return;
+    }
+
+    filtered.forEach(course => {
+        const card = new CourseCardComponent(container);
+        card.render(course,
+            () => new ProductPage(this.parent, course.id).render(),
+            () => { removeCourse(course.id); this.renderCards(); }
+        );
+    });
+}
+```
