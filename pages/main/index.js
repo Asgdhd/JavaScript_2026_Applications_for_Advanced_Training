@@ -41,13 +41,17 @@ export class MainPage {
             <div id="sidebar-container"></div>
             <main id="main-content">
                 <div class="container-fluid">
-                    <h2>Курсы повышения квалификации</h2>
-                    <div class="d-flex gap-3 my-3">
-                        <input type="text" id="search-input" class="form-control w-50"
-                            placeholder="Поиск курса..." value="${this.searchQuery}">
-                        <button id="restore-btn" class="btn">Вернуть всё</button>
-                        <button id="add-btn" class="btn">+</button>
+                    <!-- ЛИПКИЙ БЛОК -->
+                    <div class="sticky-controls">
+                        <h2>Курсы повышения квалификации</h2>
+                        <div class="d-flex gap-3 my-3">
+                            <input type="text" id="search-input" class="form-control w-50"
+                                placeholder="Поиск курса..." value="${this.searchQuery}">
+                            <button id="restore-btn" class="btn">Вернуть всё</button>
+                            <button id="add-btn" class="btn">+</button>
+                        </div>
                     </div>
+                    <!-- КОНТЕЙНЕР КАРТОЧЕК -->
                     <div id="cards-container" class="d-flex flex-wrap gap-3"></div>
                 </div>
             </main>
