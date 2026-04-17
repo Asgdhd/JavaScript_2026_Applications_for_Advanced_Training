@@ -1,4 +1,4 @@
-const allCourses = [
+export let visibleCourses = [
     {
         id: 1,
         title: "Программная инженерия (Python)",
@@ -29,7 +29,6 @@ const allCourses = [
         shortText: "Проектирование удобных и современных интерфейсов.",
         duration: "60 академических часов",
         details: "Основы композиции, работа в Figma и проведение юзабилити-тестирований.",
-        // Новая сверхстабильная ссылка
         src: "https://cdn.pixabay.com/photo/2019/10/09/07/28/development-4536630_1280.png"
     },
     {
@@ -39,10 +38,44 @@ const allCourses = [
         duration: "96 академических часов",
         details: "Изучение Kotlin или Swift, жизненный цикл приложения и публикация в сторы.",
         src: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500"
+    },
+    {
+        id: 6,
+        title: "Кибербезопасность",
+        shortText: "Защита данных и поиск уязвимостей в сетях.",
+        duration: "80 академических часов",
+        details: "Этичный хакинг, криптография и настройка систем сетевой защиты.",
+        src: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"
     }
 ];
 
-export let visibleCourses = [...allCourses];
-export const removeCourse = (id) => { visibleCourses = visibleCourses.filter(c => c.id !== parseInt(id)); };
-export const restoreCourses = () => { visibleCourses = [...allCourses]; };
-export const getCourseById = (id) => allCourses.find(c => c.id === parseInt(id));
+const allCourses = [...visibleCourses];
+
+export const getCourseById = (id) => visibleCourses.find(c => c.id === parseInt(id));
+
+export const removeCourse = (id) => {
+    visibleCourses = visibleCourses.filter(c => c.id !== id);
+};
+
+export const restoreCourses = () => {
+    visibleCourses = [...allCourses];
+};
+
+// Новая функция для добавления рандомной карточки
+export const addRandomCourse = () => {
+    const getRandomField = (field) => {
+        const randomIndex = Math.floor(Math.random() * allCourses.length);
+        return allCourses[randomIndex][field];
+    };
+
+    const newCourse = {
+        id: Date.now(), // Уникальный ID
+        title: getRandomField('title'),
+        shortText: getRandomField('shortText'),
+        duration: getRandomField('duration'),
+        details: getRandomField('details'),
+        src: getRandomField('src')
+    };
+
+    visibleCourses.push(newCourse);
+};
