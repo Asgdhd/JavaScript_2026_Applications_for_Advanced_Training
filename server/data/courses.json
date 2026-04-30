@@ -5,7 +5,7 @@
     "shortText": "Основы промышленной разработки на языке Python.",
     "duration": "72 академических часа",
     "details": "Изучение ООП, создание веб-сервисов на FastAPI и основы DevOps.",
-    "src": "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=500"
+    "src": "https://s.yimg.com/ny/api/res/1.2/OH0AjT025RFPEjprJ9c4Hg--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD02NzU-/https://media.zenfs.com/en/cio_dive_389/e7223431487a435a37c315bb01d5991b"
   },
   {
     "id": 2,
@@ -13,7 +13,7 @@
     "shortText": "Сбор требований и проектирование IT-систем.",
     "duration": "48 академических часов",
     "details": "Изучение UML, BPMN и методологий разработки ПО.",
-    "src": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500"
+    "src": "https://elearn.urfu.ru/pluginfile.php/1180509/course/overviewfiles/Системный%20анализ.jpg"
   },
   {
     "id": 3,
@@ -21,7 +21,7 @@
     "shortText": "Нейросети, анализ данных и искусственный интеллект.",
     "duration": "120 академических часов",
     "details": "Работа с библиотеками Pandas, Scikit-Learn, PyTorch и алгоритмами регрессии.",
-    "src": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500"
+    "src": "https://avatars.mds.yandex.net/i?id=900628c7a82799f265b0acd150b82a83_l-5220612-images-thumbs&n=13"
   },
   {
     "id": 4,
@@ -29,7 +29,7 @@
     "shortText": "Проектирование удобных и современных интерфейсов.",
     "duration": "60 академических часов",
     "details": "Основы композиции, работа в Figma и проведение юзабилити-тестирований.",
-    "src": "https://cdn.pixabay.com/photo/2019/10/09/07/28/development-4536630_1280.png"
+    "src": "https://www.images.cybrosys.com/css/assets/populor/courses-7.jpg"
   },
   {
     "id": 5,
@@ -37,7 +37,7 @@
     "shortText": "Создание нативных приложений для iOS и Android.",
     "duration": "96 академических часов",
     "details": "Изучение Kotlin или Swift, жизненный цикл приложения и публикация в сторы.",
-    "src": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500"
+    "src": "https://avatars.mds.yandex.net/i?id=ed9faba46b199574762bc75d47cfd315_l-7682919-images-thumbs&n=13"
   },
   {
     "id": 6,
@@ -45,7 +45,7 @@
     "shortText": "Защита данных и поиск уязвимостей в сетях.",
     "duration": "80 академических часов",
     "details": "Этичный хакинг, криптография и настройка систем сетевой защиты.",
-    "src": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"
+    "src": "https://www.school619.ru/assets/images/news/2021_12/kiberbezopasnost'.jpg"
   },
   {
     "id": 7,
