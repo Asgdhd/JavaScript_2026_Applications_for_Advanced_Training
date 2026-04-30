@@ -1,12 +1,18 @@
 {
   "name": "javascript_2026",
   "version": "1.0.0",
-  "description": "**Цель** данной лабораторной работы - знакомство с node, npm, написание простого приложения на JavaScript. В ходе выполнения работы, вам предстоит ознакомиться с кодом реализации простого интерфейса и вывода данных, и затем выполнить задания по варианту.",
   "main": "index.js",
   "dependencies": {
-    "bootstrap": "^5.3.8"
+    "bootstrap": "^5.3.8",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "morgan": "^1.10.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,5 +26,9 @@
   "bugs": {
     "url": "https://github.com/nillio/JavaScript_2026_Applications_for_Advanced_Training/issues"
   },
-  "homepage": "https://github.com/nillio/JavaScript_2026_Applications_for_Advanced_Training#readme"
+  "homepage": "https://github.com/nillio/JavaScript_2026_Applications_for_Advanced_Training#readme",
+  "description": "**Цель** данной лабораторной работы - знакомство с node, npm, написание простого приложения на JavaScript. В ходе выполнения работы, вам предстоит ознакомиться с кодом реализации простого интерфейса и вывода данных, и затем выполнить задания по варианту.",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }
