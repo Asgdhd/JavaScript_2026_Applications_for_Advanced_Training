@@ -1,6 +1,7 @@
 import { HeaderComponent } from "../../components/header/index.js";
 import { SidebarComponent } from "../../components/sidebar/index.js";
 import { MainPage } from "../main/index.js";
+import { EditPage } from "../edit/index.js";
 
 export class AuthorPage {
     constructor(parent) {
@@ -27,6 +28,10 @@ export class AuthorPage {
         const sidebar = new SidebarComponent(document.getElementById('sidebar-container'));
 
         header.render(() => new MainPage(this.parent).render(), () => sidebar.toggle());
-        sidebar.render(() => new MainPage(this.parent).render(), () => this.render());
+        sidebar.render(
+            () => new MainPage(this.parent).render(),
+            () => new EditPage(this.parent).render(),
+            () => this.render()
+        );
     }
 }
