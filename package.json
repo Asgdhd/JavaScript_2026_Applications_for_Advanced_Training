@@ -7,7 +7,9 @@
     "bootstrap": "^5.3.8"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -20,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/nillio/JavaScript_2026_Applications_for_Advanced_Training/issues"
   },
-  "homepage": "https://github.com/nillio/JavaScript_2026_Applications_for_Advanced_Training#readme"
+  "homepage": "https://github.com/nillio/JavaScript_2026_Applications_for_Advanced_Training#readme",
+  "devDependencies": {
+    "vite": "^8.0.10"
+  }
 }

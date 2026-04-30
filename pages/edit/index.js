@@ -2,7 +2,7 @@ import { HeaderComponent } from "../../components/header/index.js";
 import { SidebarComponent } from "../../components/sidebar/index.js";
 import { MainPage } from "../main/index.js";
 import { AuthorPage } from "../author/index.js";
-import { fetchCourseById } from "../../modules/store.js";
+import { fetchCourseById, createCourse, updateCourse } from "../../modules/store.js";
 
 export class EditPage {
     constructor(parent, id = null) {
@@ -11,7 +11,7 @@ export class EditPage {
         this.isEdit = id !== null;
     }
 
-    render() {
+    async render() {
         this.parent.innerHTML = `
             <div id="header-container"></div>
             <div id="sidebar-container"></div>
@@ -60,20 +60,46 @@ export class EditPage {
         document.getElementById('back-btn').addEventListener('click', () => new MainPage(this.parent).render());
 
         if (this.isEdit) {
-            fetchCourseById(this.id, (course) => {
-                if (course) {
-                    document.getElementById('title').value = course.title || '';
-                    document.getElementById('shortText').value = course.shortText || '';
-                    document.getElementById('duration').value = course.duration || '';
-                    document.getElementById('details').value = course.details || '';
-                    document.getElementById('src').value = course.src || '';
-                }
-            });
+            const course = await fetchCourseById(this.id);
+            if (course) {
+                document.getElementById('title').value = course.title || '';
+                document.getElementById('shortText').value = course.shortText || '';
+                document.getElementById('duration').value = course.duration || '';
+                document.getElementById('details').value = course.details || '';
+                document.getElementById('src').value = course.src || '';
+            }
         }
 
-        // Кнопка Сохранить без обработчика; сообщение в консоль
-        document.getElementById('save-btn').addEventListener('click', () => {
-            console.log('Функция сохранения будет доступна в следующей лабораторной работе.');
+        document.getElementById('save-btn').addEventListener('click', async () => {
+            const courseData = {
+                title: document.getElementById('title').value.trim(),
+                shortText: document.getElementById('shortText').value.trim(),
+                duration: document.getElementById('duration').value.trim(),
+                details: document.getElementById('details').value.trim(),
+                src: document.getElementById('src').value.trim(),
+            };
+
+            if (!courseData.title || !courseData.shortText) {
+                console.error('Название и краткое описание обязательны');
+                return;
+            }
+
+            let result;
+            if (this.isEdit) {
+                result = await updateCourse(this.id, courseData);
+                if (result) {
+                    console.log('Курс обновлён');
+                }
+            } else {
+                result = await createCourse(courseData);
+                if (result) {
+                    console.log('Курс создан');
+                }
+            }
+
+            if (result) {
+                new MainPage(this.parent).render(); // возвращаемся на главную
+            }
         });
     }
 }

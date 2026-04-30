@@ -12,12 +12,9 @@ export class MainPage {
         this.searchQuery = "";
     }
 
-    fetchAndRenderCards() {
-        fetchCourses(this.searchQuery, (data) => {
-            if (data) {
-                this.renderCards(data);
-            }
-        });
+    async fetchAndRenderCards() {
+        const data = await fetchCourses(this.searchQuery);
+        if (data) this.renderCards(data);
     }
 
     renderCards(courses) {
@@ -34,12 +31,11 @@ export class MainPage {
             const card = new CourseCardComponent(container);
             card.render(course,
                 () => new ProductPage(this.parent, course.id).render(),
-                () => {
-                    deleteCourse(course.id, (success) => {
-                        if (success) {
-                            this.fetchAndRenderCards();
-                        }
-                    });
+                async () => {
+                    const success = await deleteCourse(course.id);
+                    if (success) {
+                        this.fetchAndRenderCards();
+                    }
                 }
             );
         });
