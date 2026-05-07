@@ -20,6 +20,7 @@
 - [Часть 2](#часть-2)
   - [1. Сборка клиентской части через Vite.](#1-сборка-клиентской-части-через-vite)
   - [2. Раздача фронтенда в качестве статики.](#2-раздача-фронтенда-в-качестве-статики)
+- [Выполненные дополнительные задания](#выполненные-дополнительные-задания)
 
 ## Часть 1.
 
@@ -328,3 +329,234 @@ async function bootstrap() {
 
 Вам необходимо доработать предыдущую лабораторную работу. Также по своему варинту, вам нужно заменить все вызовы и использования
 XMLHttpRequest на fetch.
+
+## Выполненные дополнительные задания
+1. Асинхронные запросы
+
+```javascript
+const cardState = new Map();
+
+
+export function initCardState(courseId) {
+    if (!cardState.has(courseId)) {
+        cardState.set(courseId, { value: 0, promise: null });
+    }
+}
+
+
+export function getCardValue(courseId) {
+    return cardState.get(courseId)?.value ?? 0;
+}
+
+
+export function setCardValue(courseId, newValue) {
+    if (cardState.has(courseId)) {
+        cardState.get(courseId).value = newValue;
+    }
+}
+
+
+export function startRequest1(courseId) {
+    const state = cardState.get(courseId);
+    if (!state) return null;
+
+    const promise = new Promise((resolve) => {
+        setTimeout(() => {
+            state.value = 7;
+            state.promise = null;
+            resolve();
+        }, 50000);
+    });
+
+    state.promise = promise;
+    return promise;
+}
+
+export function startRequest2(courseId) {
+    setCardValue(courseId, 4);
+    return Promise.resolve();
+}
+
+
+export function getAllPendingPromises() {
+    const promises = [];
+    for (const [, state] of cardState) {
+        if (state.promise) {
+            promises.push(state.promise);
+        }
+    }
+    return promises;
+}
+
+
+export function getTotalSum() {
+    let sum = 0;
+    for (const [, state] of cardState) {
+        sum += state.value;
+    }
+    return sum;
+}
+
+```
+
+```
+import { initCardState, getCardValue, setCardValue, startRequest1, startRequest2 } from "../../modules/promiseStore.js";
+
+export class CourseCardComponent {
+    constructor(parent) {
+        this.parent = parent;
+    }
+
+    getHTML(data) {
+        initCardState(data.id);
+        const currentValue = getCardValue(data.id);
+
+        return `
+            <div class="card m-2" style="width: 18rem;">
+                <img class="card-img-top" src="${data.src}" alt="${data.title}" style="height: 180px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${data.title}</h5>
+                    <p class="card-text flex-grow-1">${data.shortText}</p>
+                    <div class="mb-2">
+                        <label>Значение: </label>
+                        <input type="number" id="field-${data.id}" value="${currentValue}" class="form-control form-control-sm" style="width:80px; display:inline;" readonly>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <button class="btn btn-primary btn-sm" id="btn-more-${data.id}" data-id="${data.id}">Подробнее</button>
+                        <button class="btn btn-danger btn-sm" id="btn-delete-${data.id}" data-id="${data.id}">Удалить</button>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <button class="btn btn-outline-secondary btn-sm" id="btn-req1-${data.id}">Запрос 1</button>
+                        <button class="btn btn-outline-secondary btn-sm" id="btn-req2-${data.id}">Запрос 2</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    addListeners(data, onMoreClick, onDeleteClick) {
+        document.getElementById(`btn-more-${data.id}`).addEventListener("click", onMoreClick);
+        document.getElementById(`btn-delete-${data.id}`).addEventListener("click", onDeleteClick);
+
+        document.getElementById(`btn-req1-${data.id}`).addEventListener("click", () => {
+            const promise = startRequest1(data.id);
+            if (promise) {
+                promise.then(() => {
+                    document.getElementById(`field-${data.id}`).value = getCardValue(data.id);
+                });
+            }
+        });
+
+        document.getElementById(`btn-req2-${data.id}`).addEventListener("click", () => {
+            startRequest2(data.id).then(() => {
+                document.getElementById(`field-${data.id}`).value = getCardValue(data.id);
+            });
+        });
+    }
+
+    render(data, onMoreClick, onDeleteClick) {
+        const html = this.getHTML(data);
+        this.parent.insertAdjacentHTML('beforeend', html);
+        this.addListeners(data, onMoreClick, onDeleteClick);
+    }
+}
+```
+
+```
+import { HeaderComponent } from "../../components/header/index.js";
+import { SidebarComponent } from "../../components/sidebar/index.js";
+import { CourseCardComponent } from "../../components/course-card/index.js";
+import { ProductPage } from "../product/index.js";
+import { AuthorPage } from "../author/index.js";
+import { EditPage } from "../edit/index.js";
+import { fetchCourses, deleteCourse } from "../../modules/store.js";
+import { getAllPendingPromises, getTotalSum } from "../../modules/promiseStore.js";
+import { ResultPage } from "../result/index.js";
+
+export class MainPage {
+    constructor(parent) {
+        this.parent = parent;
+        this.searchQuery = "";
+    }
+
+    async fetchAndRenderCards() {
+        const data = await fetchCourses(this.searchQuery);
+        if (data) this.renderCards(data);
+    }
+
+    renderCards(courses) {
+        const container = document.getElementById('cards-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (courses.length === 0) {
+            container.innerHTML = `<div class="nothing-found">Ничего не найдено по вашему запросу</div>`;
+            return;
+        }
+
+        courses.forEach(course => {
+            const card = new CourseCardComponent(container);
+            card.render(course,
+                () => new ProductPage(this.parent, course.id).render(),
+                async () => {
+                    const success = await deleteCourse(course.id);
+                    if (success) {
+                        this.fetchAndRenderCards();
+                    }
+                }
+            );
+        });
+    }
+
+    render() {
+        this.parent.innerHTML = `
+            <div id="header-container"></div>
+            <div id="sidebar-container"></div>
+            <main id="main-content">
+                <div class="container-fluid">
+                    <div class="sticky-controls">
+                        <h2>Курсы повышения квалификации</h2>
+                        <div class="d-flex gap-3 my-3">
+                            <input type="text" id="search-input" class="form-control w-50"
+                                placeholder="Поиск курса..." value="${this.searchQuery}">
+                            <button id="add-btn" class="btn">+</button>
+                            <button id="req3-btn" class="btn btn-secondary">Запрос 3</button>
+                        </div>
+                    </div>
+                    <div id="cards-container" class="d-flex flex-wrap gap-3"></div>
+                </div>
+            </main>
+        `;
+
+        const header = new HeaderComponent(document.getElementById('header-container'));
+        const sidebar = new SidebarComponent(document.getElementById('sidebar-container'));
+
+        header.render(() => this.render(), () => sidebar.toggle());
+        sidebar.render(
+            () => this.render(),
+            () => new EditPage(this.parent).render(),
+            () => new AuthorPage(this.parent).render()
+        );
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            this.searchQuery = e.target.value.trim();
+            this.fetchAndRenderCards();
+        });
+
+        document.getElementById('add-btn').addEventListener('click', () => {
+            new EditPage(this.parent).render();
+        });
+
+        document.getElementById('req3-btn').addEventListener('click', async () => {
+            const pendingPromises = getAllPendingPromises();
+            await Promise.all(pendingPromises);
+            new ResultPage(this.parent).render();
+        });
+
+        this.fetchAndRenderCards();
+    }
+}
+```
+
+
+
