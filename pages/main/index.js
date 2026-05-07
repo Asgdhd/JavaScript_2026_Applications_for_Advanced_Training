@@ -10,11 +10,17 @@ export class MainPage {
     constructor(parent) {
         this.parent = parent;
         this.searchQuery = "";
+        this.sortActive = false;
+        this.lastCourses = [];
     }
 
     fetchAndRenderCards() {
         fetchCourses(this.searchQuery, (data) => {
             if (data) {
+                this.lastCourses = data;
+                if (this.sortActive) {
+                    data = [...data].sort((a, b) => a.title.localeCompare(b.title));
+                }
                 this.renderCards(data);
             }
         });
@@ -57,6 +63,7 @@ export class MainPage {
                             <input type="text" id="search-input" class="form-control w-50"
                                 placeholder="Поиск курса..." value="${this.searchQuery}">
                             <button id="add-btn" class="btn">+</button>
+                            <button id="sort-btn" class="btn btn-secondary">Сортировать</button>
                         </div>
                     </div>
                     <div id="cards-container" class="d-flex flex-wrap gap-3"></div>
@@ -81,6 +88,16 @@ export class MainPage {
 
         document.getElementById('add-btn').addEventListener('click', () => {
             new EditPage(this.parent).render();
+        });
+
+        document.getElementById('sort-btn').addEventListener('click', () => {
+            this.sortActive = true;
+            if (this.lastCourses.length) {
+                const sorted = [...this.lastCourses].sort((a, b) => a.title.localeCompare(b.title));
+                this.renderCards(sorted);
+            } else {
+                this.fetchAndRenderCards();
+            }
         });
 
         this.fetchAndRenderCards();
