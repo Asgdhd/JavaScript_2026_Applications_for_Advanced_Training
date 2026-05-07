@@ -5,6 +5,8 @@ import { ProductPage } from "../product/index.js";
 import { AuthorPage } from "../author/index.js";
 import { EditPage } from "../edit/index.js";
 import { fetchCourses, deleteCourse } from "../../modules/store.js";
+import { getAllPendingPromises, getTotalSum } from "../../modules/promiseStore.js";
+import { ResultPage } from "../result/index.js";
 
 export class MainPage {
     constructor(parent) {
@@ -53,6 +55,7 @@ export class MainPage {
                             <input type="text" id="search-input" class="form-control w-50"
                                 placeholder="Поиск курса..." value="${this.searchQuery}">
                             <button id="add-btn" class="btn">+</button>
+                            <button id="req3-btn" class="btn btn-secondary">Запрос 3</button>
                         </div>
                     </div>
                     <div id="cards-container" class="d-flex flex-wrap gap-3"></div>
@@ -77,6 +80,12 @@ export class MainPage {
 
         document.getElementById('add-btn').addEventListener('click', () => {
             new EditPage(this.parent).render();
+        });
+
+        document.getElementById('req3-btn').addEventListener('click', async () => {
+            const pendingPromises = getAllPendingPromises();
+            await Promise.all(pendingPromises);
+            new ResultPage(this.parent).render();
         });
 
         this.fetchAndRenderCards();
